@@ -27,7 +27,8 @@ class MainActivity : AppCompatActivity() {
         val client = RecentClient.client
         RecentClient.clientLiveData.observe(this, Observer { client ->
             binding.txtPackageName.text = client?.clientPackageName
-            binding.txtData.text = client?.clientData
+            binding.txtServerPid.text = client?.processid
+            binding.txtData.text = client?.data
             binding.txtIpcMethod.text = client?.ipcMethod
         })
         binding.connectionStatus.text =
@@ -44,7 +45,9 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         val client = RecentClient.client
         RecentClient.clientLiveData.observe(this, Observer { client ->
-            binding.txtData.text = client?.clientData
+            binding.txtData.text = client?.data
+            binding.txtServerPid.text = client.processid
+            binding.txtPackageName.text = client.clientPackageName
             binding.txtIpcMethod.text = client?.ipcMethod
         })
     }

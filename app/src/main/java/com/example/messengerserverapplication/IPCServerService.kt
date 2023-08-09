@@ -10,22 +10,27 @@ import android.os.Messenger
 import com.example.messengerserverapplication.RecentClient.client
 import javax.xml.xpath.XPathConstants.STRING
 import android.os.Process
+import android.util.Log
 
 class IPCServerService : Service() {
+
     private val mMessenger = Messenger(IncomingHandler())
     private var ccount = 0
+     val NOT_SENT = "Not sent!"
+
     // Messenger IPC - Message Handler
+
     internal inner class IncomingHandler : Handler() {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
             val receivedBundle = msg.data
             RecentClient.client = Client(
                 receivedBundle.getString(PACKAGE_NAME),
-                receivedBundle.getString(DATA),
+                Process.myPid().toString() ,
+                receivedBundle.getString(DATA).toString(),
                 "Messenger"
             )
             RecentClient.updateData(client!!)
-            println(RecentClient.clientLiveData.value?.clientData)
             ccount += 1
             // Send message to the client. The message contains server info
             val message = Message.obtain(this@IncomingHandler, 0)
@@ -42,11 +47,37 @@ class IPCServerService : Service() {
         }
     }
 
+    private val clientDataViewModel: ClientDataViewModel
+        get() = (application as MyApplication).clientDataViewModel
+
+        private val aidlBinder = object : IIPCExample.Stub() {
+
+        override fun getPid(): Int = Process.myPid()
+
+        override fun getConnectionCount(): Int = IPCServerService.connectionCount
+
+        override fun postVal(packageName: String?, pid: Int, data : String) {
+            Companion.connectionCount++
+            // Get message from client. Save recent connected client info.
+            RecentClient.client = Client(
+                packageName ?: NOT_SENT,
+                pid.toString(),
+                data,
+                "AIDL"
+            )
+            RecentClient.updateData(client!!)
+
+            clientDataViewModel.clientDataLiveData.postValue(RecentClient.client)
+            //myApplication.clientDataViewModel.updateClientData(RecentClient.client!!)
+            Log.d("INCC", "GELDİ")
+        }
+    }
     override fun onBind(intent: Intent?): IBinder? {
+        println("hello")
         // Choose which binder we need to return based on the type of IPC the client makes
         return when (intent?.action) {
             "messengerexample" -> mMessenger.binder
-
+            "aidlexample" -> aidlBinder
 
             else -> null
         }

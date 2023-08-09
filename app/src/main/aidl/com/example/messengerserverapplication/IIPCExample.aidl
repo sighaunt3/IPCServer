@@ -11,5 +11,5 @@ interface IIPCExample {
     int getConnectionCount();
 
     /** Set displayed value of screen */
-    void setDisplayedValue(String packageName, int pid, String data);
+    void postVal(String packageName, int pid, String data);
 }

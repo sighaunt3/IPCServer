@@ -5,7 +5,8 @@ import androidx.lifecycle.MutableLiveData
 
 data class Client(
     var clientPackageName: String?,
-    var clientData: String?,
+    var processid: String?,
+    var data: String,
     var ipcMethod: String
 )
 
