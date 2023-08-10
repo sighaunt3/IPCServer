@@ -2,6 +2,7 @@ package com.example.messengerserverapplication
 
 import android.app.Service
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -11,6 +12,9 @@ import com.example.messengerserverapplication.RecentClient.client
 import javax.xml.xpath.XPathConstants.STRING
 import android.os.Process
 import android.util.Log
+import androidx.annotation.RequiresApi
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class IPCServerService : Service() {
 
@@ -28,6 +32,7 @@ class IPCServerService : Service() {
                 receivedBundle.getString(PACKAGE_NAME),
                 Process.myPid().toString() ,
                 receivedBundle.getString(DATA).toString(),
+                receivedBundle.getString(ZAMAN).toString(),
                 "Messenger"
             )
             RecentClient.updateData(client!!)
@@ -36,7 +41,6 @@ class IPCServerService : Service() {
             val message = Message.obtain(this@IncomingHandler, 0)
             val bundle = Bundle()
             val pid = Process.myPid()
-
             bundle.putInt(CONNECTION_COUNT, ccount)
             bundle.putInt(PID, pid)
 
@@ -56,16 +60,24 @@ class IPCServerService : Service() {
 
         override fun getConnectionCount(): Int = IPCServerService.connectionCount
 
+        @RequiresApi(Build.VERSION_CODES.O)
         override fun postVal(packageName: String?, pid: Int, data : String) {
             Companion.connectionCount++
+            val current = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+            val formatted = current.format(formatter)
+
             // Get message from client. Save recent connected client info.
             RecentClient.client = Client(
                 packageName ?: NOT_SENT,
-                pid.toString(),
+                getPid().toString(),
                 data,
+                formatted,
                 "AIDL"
             )
+            println(pid.toString())
             RecentClient.updateData(client!!)
+            println(RecentClient.client!!.processid)
 
             clientDataViewModel.clientDataLiveData.postValue(RecentClient.client)
             //myApplication.clientDataViewModel.updateClientData(RecentClient.client!!)

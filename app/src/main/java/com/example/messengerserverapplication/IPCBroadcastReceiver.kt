@@ -11,16 +11,19 @@ import com.example.messengerserverapplication.databinding.ActivityMainBinding
 
 class IPCBroadcastReceiver: BroadcastReceiver() {
 
-    override fun onReceive(context: Context?, intent: Intent?) {
-        RecentClient.client = Client(
-            intent?.getStringExtra(PACKAGE_NAME),
-            Process.myPid().toString(),
-            intent?.getStringExtra(DATA).toString(),
-            "Broadcast"
-        )
-        println("broadcast")
-        RecentClient.updateData(client!!)
+        override fun onReceive(context: Context?, intent: Intent?) {
+            RecentClient.client = Client(
+                intent?.getStringExtra(PACKAGE_NAME),
+                Process.myPid().toString(),
+                intent?.getStringExtra(DATA).toString(),
+                intent?.getStringExtra(ZAMAN).toString(),
+                "Broadcast"
+            )
+            println("broadcast")
+            println(intent?.getStringExtra(ZAMAN).toString())
+            println(intent?.getStringExtra(PACKAGE_NAME))
+            RecentClient.updateData(client!!)
 
-    }
+        }
 
 }

@@ -7,7 +7,9 @@ data class Client(
     var clientPackageName: String?,
     var processid: String?,
     var data: String,
+    var time:String,
     var ipcMethod: String
+
 )
 
 object RecentClient {

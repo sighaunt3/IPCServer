@@ -16,8 +16,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val intent = Intent(this, IPCServerService::class.java)
-        startService(intent)
+        binding.testtt.text = "Time Received"
+        val intent = Intent( this, IPCServerService::class.java)
         println("test1")
     }
 
@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
             binding.txtServerPid.text = client?.processid
             binding.txtData.text = client?.data
             binding.txtIpcMethod.text = client?.ipcMethod
+            binding.editTime.text = client?.time
+
         })
         binding.connectionStatus.text =
             if (client == null) {
@@ -49,6 +51,8 @@ class MainActivity : AppCompatActivity() {
             binding.txtServerPid.text = client.processid
             binding.txtPackageName.text = client.clientPackageName
             binding.txtIpcMethod.text = client?.ipcMethod
+            binding.editTime.text = client?.time
+
         })
     }
 
